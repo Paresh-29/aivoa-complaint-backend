@@ -1,13 +1,12 @@
 import json
-from io import BytesIO
 
 from fastapi import APIRouter, Depends, File, UploadFile
-from pypdf import PdfReader
 from sqlalchemy.orm import Session
 
 from app.ai.groq_client import extract_complaint
 from app.db.database import get_db
 from app.models.complaint import Complaint
+from app.pdf.parser import extract_text_from_pdf
 from app.schemas.complaint import ComplaintCreate, ComplaintResponse
 
 router = APIRouter(
@@ -35,22 +34,6 @@ def create_complaint(complaint: ComplaintCreate, db: Session = Depends(get_db)):
 async def upload_complaint(file: UploadFile = File(...)):
     pdf_bytes = await file.read()
 
-    render = PdfReader(BytesIO(pdf_bytes))
-
-    text = ""
-
-    for page in render.pages:
-        extracted_text = page.extract_text()
-
-        if extracted_text:
-            text += extracted_text + "\n"
-
+    text = extract_text_from_pdf(pdf_bytes)
     result = extract_complaint(text)
     return json.loads(result)
-
-
-@router.get("/ai-test")
-def ai_test():
-    return {
-        "response": test_groq(),
-    }
