@@ -1,7 +1,4 @@
 from fastapi import FastAPI
-from sqlalchemy import text
-
-from app.db.database import engine
 
 app = FastAPI(
   title="AIVOA Complaint Backend",
@@ -14,9 +11,3 @@ def health():
     "status": "healthy",
     "message": "Backend is running"
   }
-
-@app.on_event("startup")
-def startup():
-    with engine.connect() as connection:
-        connection.execute(text("SELECT 1"))
-    print("Database connected successfully!")
