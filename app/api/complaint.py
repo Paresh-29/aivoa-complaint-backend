@@ -3,10 +3,12 @@ import json
 from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session
 
-from app.ai.groq_client import extract_complaint
+from app.ai.groq_client import create_complaint
 from app.db.database import get_db
+from app.graph.graph import graph
 from app.models.complaint import Complaint
 from app.pdf.parser import extract_text_from_pdf
+from app.schemas.assistant import AssistantRequest
 from app.schemas.complaint import ComplaintCreate, ComplaintResponse
 
 router = APIRouter(
@@ -22,7 +24,7 @@ def get_complaints(db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=ComplaintResponse)
-def create_complaint(complaint: ComplaintCreate, db: Session = Depends(get_db)):
+def create_complaint_record(complaint: ComplaintCreate, db: Session = Depends(get_db)):
     db_complaint = Complaint(**complaint.model_dump())
     db.add(db_complaint)
     db.commit()
@@ -35,5 +37,16 @@ async def upload_complaint(file: UploadFile = File(...)):
     pdf_bytes = await file.read()
 
     text = extract_text_from_pdf(pdf_bytes)
-    result = extract_complaint(text)
-    return json.loads(result)
+    result = create_complaint(text)
+    return result
+
+@router.post("/assistant")
+def complaint_assistant(request: AssistantRequest):
+  state = graph.invoke(
+          {
+              "complaint": request.complaint,
+              "message": request.message,
+          }
+      )
+
+  return state["complaint"]
