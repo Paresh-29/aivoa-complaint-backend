@@ -23,6 +23,11 @@ class Complaint(Base):
         String(255),
     )
 
+    product_strength: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
     batch_number: Mapped[str] = mapped_column(
         String(100),
     )
@@ -57,6 +62,11 @@ class Complaint(Base):
         nullable=True,
     )
 
+    priority: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
     suggested_action: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
@@ -67,8 +77,9 @@ class Complaint(Base):
         nullable=True,
     )
 
-    source_type: Mapped[str] = mapped_column(
+    complaint_source: Mapped[str | None] = mapped_column(
         String(50),
+        nullable=True,
     )
 
     uploaded_file: Mapped[str | None] = mapped_column(

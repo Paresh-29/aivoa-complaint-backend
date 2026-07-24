@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict
 class ComplaintCreate(BaseModel):
     customer_name: str | None = None
     product_name: str | None = None
+    product_strength: str | None = None
     batch_number: str | None = None
 
     manufacturing_date: date | None = None
@@ -17,10 +18,12 @@ class ComplaintCreate(BaseModel):
     quantity_affected: str | None = None
 
     severity: str | None = None
+    priority: str | None = None
+
     suggested_action: str | None = None
     risk_assessment: str | None = None
 
-    source_type: str
+    complaint_source: str | None = None
     uploaded_file: str | None = None
 
 

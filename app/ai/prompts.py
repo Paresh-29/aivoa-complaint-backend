@@ -9,7 +9,9 @@ Use the following fields:
 
 {
   "customer_name": null,
+  "complaint_source": null,
   "product_name": null,
+  "product_strength": null,
   "batch_number": null,
   "manufacturing_date": null,
   "expiry_date": null,
@@ -17,6 +19,7 @@ Use the following fields:
   "complaint_description": null,
   "quantity_affected": null,
   "severity": null,
+  "priority": null,
   "suggested_action": null,
   "risk_assessment": null
 }
@@ -25,8 +28,30 @@ Rules:
 - Return ONLY valid JSON.
 - Do not include markdown.
 - Do not wrap the JSON inside ``` blocks.
-- If a field is missing, return null.
-- Infer severity, suggested_action, and risk_assessment from the complaint if possible.
+- If a field is not explicitly present in the document, return null.
+- Never guess, invent, or fabricate missing information.
+- Extract only information supported by the complaint document.
+- Extract the complaint source (e.g. Pharmacy, Hospital, Distributor, QMS Portal, Email) into "complaint_source" when explicitly mentioned.
+- Extract the medicine name into "product_name".
+- Extract the dosage/strength into "product_strength".
+  Example:
+    "Amoxicillin Capsules 500 mg"
+    -> product_name: "Amoxicillin Capsules"
+    -> product_strength: "500 mg"
+- Keep quantity_affected as a descriptive string if present (e.g. "12 capsules", "45 blister packs").
+AI Assessment Rules:
+- Always determine a severity level: LOW, MEDIUM, HIGH, or CRITICAL.
+- Always determine a priority level: LOW, MEDIUM, HIGH, or CRITICAL.
+- Always generate a suggested_action based on the complaint.
+- Always generate a risk_assessment explaining the potential impact on product quality or patient safety.
+- These three fields must never be null.
+  Example:
+  Complaint:
+  Black particles found inside blister packs.
+  Output:
+  "severity": "HIGH",
+  "suggested_action": "Quarantine the affected batch, initiate laboratory investigation, and perform root cause analysis.",
+  "risk_assessment": "Potential contamination may impact patient safety and product quality."
 """
 
 UPDATE_COMPLAINT_PROMPT = """
