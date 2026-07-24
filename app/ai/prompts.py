@@ -39,6 +39,15 @@ Rules:
     -> product_name: "Amoxicillin Capsules"
     -> product_strength: "500 mg"
 - Keep quantity_affected as a descriptive string if present (e.g. "12 capsules", "45 blister packs").
+Date Rules:
+- Return all dates in ISO 8601 format (YYYY-MM-DD).
+- If only the month and year are provided, use the first day of the month.
+  Example:
+  "March 2026" -> "2026-03-01"
+  "February 2028" -> "2028-02-01"
+- If only the year is provided, use January 1st.
+  Example:
+  "2026" -> "2026-01-01"
 AI Assessment Rules:
 - Always determine a severity level: LOW, MEDIUM, HIGH, or CRITICAL.
 - Always determine a priority level: LOW, MEDIUM, HIGH, or CRITICAL.
@@ -72,4 +81,14 @@ Rules:
 - If the user adds new information, merge it into the complaint.
 - Do not return markdown.
 - Do not wrap JSON inside ``` blocks.
+
+Date Rules:
+- Return all dates in ISO 8601 format (YYYY-MM-DD).
+- If only the month and year are provided, use the first day of the month.
+  Example:
+  "March 2026" -> "2026-03-01"
+  "February 2028" -> "2028-02-01"
+- If only the year is provided, use January 1st.
+  Example:
+  "2026" -> "2026-01-01"
 """
